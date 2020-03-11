@@ -154,4 +154,34 @@ public class ParkingDataBaseIT {
         assertEquals(24 * 60 * 60 * 1000, ticketNow.getInTime().getTime() - ticket.getInTime().getTime(), 1000.0);
     }
 
+    @Test
+    public void givenRecurringVehicle_whenLeavingParking_fareIsReduced()
+    {
+    	// GIVEN
+    	// 1st journey in the parking
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+        parkingSpot.setAvailable(false);
+        parkingSpotDAO.updateParking(parkingSpot);
+        Date inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
+        Ticket ticket = new Ticket();
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        ticket.setInTime(inTime);
+        ticketDAO.saveTicket(ticket);
+        parkingService.processExitingVehicle();
+    	// 2nd journey in the parking
+        parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+        parkingSpot.setAvailable(false);
+        parkingSpotDAO.updateParking(parkingSpot);
+        inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
+        ticket.setParkingSpot(parkingSpot);
+        ticketDAO.saveTicket(ticket);
+        // WHEN
+        parkingService.processExitingVehicle();
+        Ticket ticketNow = ticketDAO.getTicket(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        //THEN
+        assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) * Fare.TARIFF_RECURRING_USER_5_PERCENT_OFF , ticketNow.getPrice());
+    }
+
 }
