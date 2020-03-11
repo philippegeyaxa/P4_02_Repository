@@ -63,4 +63,8 @@ public class Ticket {
 	public void setRecurring(boolean recurring) {
 		isRecurring = recurring;
 	}
+
+	public boolean isRecurring() {
+		return isRecurring;
+	}
 }
