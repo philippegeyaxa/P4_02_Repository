@@ -86,4 +86,9 @@ public class TicketDAO {
         }
         return false;
     }
+
+	public int countTickets(String registrationNumberTestValueAbcdef) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

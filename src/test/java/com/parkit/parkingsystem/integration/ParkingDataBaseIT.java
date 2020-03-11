@@ -93,4 +93,45 @@ public class ParkingDataBaseIT {
         assertTrue(ticketOut.getParkingSpot().isAvailable());
     }
 
+    
+    @Test
+    public void givenUnkownVehicle_countTicketReturns0()
+    {
+    	// GIVEN
+    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+       // WHEN
+        parkingService.processIncomingVehicle();
+        int numberOfTickets = ticketDAO.countTickets("WRONG_ID!");
+        //THEN
+        assertEquals(0, numberOfTickets);
+    }
+
+    @Test
+    public void givenVehicleInParkingFirstTime_countTicketReturns1()
+    {
+    	// GIVEN
+    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        // WHEN
+        parkingService.processIncomingVehicle();
+    	int numberOfTickets = ticketDAO.countTickets(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        //THEN
+        assertEquals(1, numberOfTickets);
+    }
+
+    @Test
+    public void givenVehicleVisitedParkingTwice_countTicketReturns2()
+    {
+    	// GIVEN
+    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        // WHEN
+    	// 1st journey into the parking
+        parkingService.processIncomingVehicle();
+        parkingService.processExitingVehicle();
+    	// 2nd journey into the parking
+        parkingService.processIncomingVehicle();
+        parkingService.processExitingVehicle();
+    	int numberOfTickets = ticketDAO.countTickets(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        //THEN
+        assertEquals(2, numberOfTickets);
+    }
 }
