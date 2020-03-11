@@ -126,10 +126,8 @@ public class ParkingDataBaseIT {
         // WHEN
     	// 1st journey into the parking
         parkingService.processIncomingVehicle();
-        parkingService.processExitingVehicle();
     	// 2nd journey into the parking
         parkingService.processIncomingVehicle();
-        parkingService.processExitingVehicle();
     	int numberOfTickets = ticketDAO.countTickets(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
         //THEN
         assertEquals(2, numberOfTickets);
