@@ -82,8 +82,8 @@ public class FareCalculatorServiceTest {
         assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
     }
 
-    @Test
-    public void givenBike_whenParkingTime45Minutes_fareIsCorrect(){
+    @Test 
+    public void givenNonRecurringBike_whenParkingTime45Minutes_fareIsCorrect(){
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  45 * 60 * 1000) );//45 minutes parking time should give 3/4th parking fare
         Date outTime = new Date();
@@ -92,12 +92,13 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurring(false);
         fareCalculatorService.calculateFare(ticket);
-        assertEquals((0.75 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice() );
+        assertEquals((0.75 * Fare.BIKE_RATE_PER_HOUR * Fare.TARIFF_STANDARD), ticket.getPrice() );
     }
 
     @Test
-    public void givenCar_whenParkingTime45Minutes_fareIsCorrect(){
+    public void givenNonRecurringCar_whenParkingTime45Minutes_fareIsCorrect(){
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  45 * 60 * 1000) );//45 minutes parking time should give 3/4th parking fare
         Date outTime = new Date();
@@ -106,8 +107,9 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurring(false);
         fareCalculatorService.calculateFare(ticket);
-        assertEquals( (0.75 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
+        assertEquals( (0.75 * Fare.CAR_RATE_PER_HOUR * Fare.TARIFF_STANDARD) , ticket.getPrice());
     }
 
     @Test
@@ -156,4 +158,39 @@ public class FareCalculatorServiceTest {
         assertEquals(0, ticket.getPrice());
     }
 
+    @Test
+    public void givenRecurringCar_whenStays24HoursInParking_fareIsCorrect()
+    {
+    	// GIVEN
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (24 * 60 * 60 * 1000) ); 
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurring(true);
+        // WHEN
+        fareCalculatorService.calculateFare(ticket);
+        // THEN
+        assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) * Fare.TARIFF_RECURRING_USER_5_PERCENT_OFF , ticket.getPrice());
+    }
+ 
+    @Test
+    public void givenRecurringBike_whenStays24HoursInParking_fareIsCorrect()
+    {
+    	// GIVEN
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (24 * 60 * 60 * 1000) ); 
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setRecurring(true);
+        // WHEN
+        fareCalculatorService.calculateFare(ticket);
+        // THEN
+        assertEquals( (24 * Fare.BIKE_RATE_PER_HOUR) * Fare.TARIFF_RECURRING_USER_5_PERCENT_OFF , ticket.getPrice());
+    }
 }
