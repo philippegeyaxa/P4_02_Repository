@@ -155,6 +155,40 @@ public class ParkingDataBaseIT {
     }
 
     @Test
+    public void givenRecurringVehicle_whenEnteringParking_ticketIsUpdatedWithRecurrence()
+    {
+    	// GIVEN
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+        parkingSpot.setAvailable(false);
+        parkingSpotDAO.updateParking(parkingSpot);
+        Date inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
+        Ticket ticket = new Ticket();
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        ticket.setInTime(inTime);
+        ticketDAO.saveTicket(ticket);
+        parkingService.processExitingVehicle();
+        // WHEN
+        parkingService.processIncomingVehicle();
+        Ticket ticketNow = ticketDAO.getTicket(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        //THEN
+        assertTrue(ticketNow.isRecurring());
+    }
+    
+    @Test
+    public void givenNonRecurringVehicle_whenEnteringParking_ticketIsUpdatedWithNoRecurrence()
+    {
+    	// GIVEN
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        // WHEN
+        parkingService.processIncomingVehicle();
+        Ticket ticketNow = ticketDAO.getTicket(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        //THEN
+        assertFalse(ticketNow.isRecurring());
+    }
+
+    @Test
     public void givenRecurringVehicle_whenLeavingParking_fareIsReduced()
     {
     	// GIVEN
@@ -163,7 +197,7 @@ public class ParkingDataBaseIT {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
         parkingSpot.setAvailable(false);
         parkingSpotDAO.updateParking(parkingSpot);
-        Date inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
+        Date inTime = new Date(System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000); 
         Ticket ticket = new Ticket();
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
@@ -176,12 +210,15 @@ public class ParkingDataBaseIT {
         parkingSpotDAO.updateParking(parkingSpot);
         inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
         ticket.setParkingSpot(parkingSpot);
+        ticket.setInTime(inTime);
+        ticket.setRecurring(true);
         ticketDAO.saveTicket(ticket);
         // WHEN
         parkingService.processExitingVehicle();
         Ticket ticketNow = ticketDAO.getTicket(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
         //THEN
-        assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) * Fare.TARIFF_RECURRING_USER_5_PERCENT_OFF , ticketNow.getPrice());
+        assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) * Fare.TARIFF_RECURRING_USER_5_PERCENT_OFF , 
+        		ticketNow.getPrice(), 0.001);
     }
 
 }
