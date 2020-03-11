@@ -71,13 +71,13 @@ public class ParkingDataBaseIT {
     }
 
     @Test
-    public void givenVehicleInParking_whenProcessExitingVehicle_registeredFareIsCorrectAndSpotIsAvailable(){
+    public void givenVehicleParked24hoursAgo_whenSecondJourneyInParkingNow_registeredFareIsCorrectAndSpotIsAvailable(){
     	// GIVEN
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
         parkingSpot.setAvailable(false);
         parkingSpotDAO.updateParking(parkingSpot);
-        Date inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); // Let's say the vehicle entered 24 hours ago
+        Date inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
         Ticket ticket = new Ticket();
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
@@ -132,4 +132,26 @@ public class ParkingDataBaseIT {
         //THEN
         assertEquals(2, numberOfTickets);
     }
+    
+    @Test
+    public void givenVehicleParked24hoursAgo_whenEnteringParkingNow_getTicketReturnsLastRecord()
+    {
+    	// GIVEN
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+        parkingSpot.setAvailable(false);
+        parkingSpotDAO.updateParking(parkingSpot);
+        Date inTime = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000); 
+        Ticket ticket = new Ticket();
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        ticket.setInTime(inTime);
+        ticketDAO.saveTicket(ticket);
+        // WHEN
+        parkingService.processIncomingVehicle();
+        Ticket ticketNow = ticketDAO.getTicket(REGISTRATION_NUMBER_TEST_VALUE_ABCDEF);
+        //THEN
+        assertEquals(24 * 60 * 60 * 1000, ticketNow.getInTime().getTime() - ticket.getInTime().getTime(), 1000.0);
+    }
+
 }
