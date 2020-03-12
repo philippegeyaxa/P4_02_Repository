@@ -140,7 +140,29 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-site-plugin</artifactId>
+ 		      <version>3.7.1</version>
+		    </plugin>
+            
         </plugins>
     </build>
+
+	<reporting>
+		<plugins>
+            <plugin>
+	            <groupId>org.codehaus.mojo</groupId>
+	            <artifactId>findbugs-maven-plugin</artifactId>
+	            <version>3.0.5</version>
+		        <configuration>
+			        <threshold>Normal</threshold>		<!-- High|Normal|Low|Exp|Ignore -->
+					<effort>Max</effort>				<!-- Min|Default|Max -->			          
+		        </configuration>
+	            
+          	</plugin>	    
+     	</plugins>            
+	</reporting>
 
 </project>
