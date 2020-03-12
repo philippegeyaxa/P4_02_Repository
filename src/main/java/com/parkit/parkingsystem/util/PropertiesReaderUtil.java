@@ -72,8 +72,9 @@ public class PropertiesReaderUtil {
     
     public DatabaseCredentials readCredentials()
     {
-    	boolean	production = App.production;
-    	if (production) return readProductionCredentials();
+    	StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+    	String caller = trace[trace.length-1].getClassName();
+    	if (caller == "com.parkit.parkingsystem.App") return readProductionCredentials();
     	else return readTestCredentials();
     }
 }
