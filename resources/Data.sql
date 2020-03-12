@@ -52,4 +52,10 @@ insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(2,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(3,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(4,true,'BIKE');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(5,true,'BIKE');
+
+create table reference_time(
+REFERENCE_VALUE DATETIME NOT NULL
+);
+insert into reference_time(REFERENCE_VALUE) values ('2020-01-01 00:00:00');
+
 commit;

@@ -16,7 +16,7 @@ public class DataBaseConfig {
     	DatabaseCredentials credentials = propertiesReaderUtil.readCredentials();
         logger.info("Create DB connection");
         Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(credentials.url, credentials.username, credentials.password);
+        return DriverManager.getConnection(credentials.url + "?serverTimezone=Europe/Paris", credentials.username, credentials.password);
     }
 
     public void closeConnection(Connection con){

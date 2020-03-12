@@ -1,6 +1,8 @@
 package com.parkit.parkingsystem.integration;
 
+import com.parkit.parkingsystem.constants.DBConstants;
 import com.parkit.parkingsystem.constants.Fare;
+import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.config.DataBaseConfig;
@@ -23,6 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 @ExtendWith(MockitoExtension.class)
@@ -221,4 +229,35 @@ public class ParkingDataBaseIT {
         		ticketNow.getPrice(), 0.001);
     }
 
+    @Test
+    public void givenDatabaseConfig_whenReadReferenceTime_timezoneIsCorrect()
+    {
+    	// DUMMY we need to use inputReaderUtil somehow to avoid UnnecessaryStubbingException
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        parkingService.processIncomingVehicle();
+    	// GIVEN
+        LocalDate referenceLocalDate = LocalDate.parse("2020-01-01");
+    	long referenceTime = java.sql.Date.valueOf(referenceLocalDate).getTime();
+    	long currentTime = 0;
+    	// WHEN
+    	DataBaseConfig dataBaseConfig = new DataBaseConfig();
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try{
+            connection = dataBaseConfig.getConnection();
+            ps = connection.prepareStatement("select * from reference_time");
+            rs = ps.executeQuery();
+            rs.next();
+            currentTime = rs.getTimestamp(1).getTime();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closeConnection(connection);
+        }
+        // THEN
+        assertEquals(referenceTime, currentTime);
+    }
 }
