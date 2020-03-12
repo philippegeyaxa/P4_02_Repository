@@ -1,0 +1,12 @@
+#Common database properties:
+db_driver   = dbdriver
+
+#Test database properties:
+db_test_url      = dbtesturl
+db_test_username = dbtestusername
+db_test_password = dbtestpassword
+
+#Production database properties:
+db_prod_url      = dbprodurl
+db_prod_username = dbprodusername
+db_prod_password = dbprodpassword
