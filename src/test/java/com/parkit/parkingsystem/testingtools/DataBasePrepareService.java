@@ -1,4 +1,4 @@
-package com.parkit.parkingsystem.integration.service;
+package com.parkit.parkingsystem.testingtools;
 
 import com.parkit.parkingsystem.config.DataBaseConfig;
 
