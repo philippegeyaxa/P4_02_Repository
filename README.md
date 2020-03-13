@@ -3,7 +3,7 @@ A command line app for managing the parking system.
 This app uses Java to run and stores the data in Mysql DB.
 
 
-## Environment setup
+## System setup
 
 These instructions will get you a copy of the project up and running on your local machine for development, testing and production purposes.
 See deployment for notes on how to deploy the project on remote servers.
@@ -65,8 +65,19 @@ To run these tests from maven, go to the folder that contains the pom.xml file a
 There are also some classes which are used only by tests classes but not by productive code.
 These classes are store in the src/test/testingtools package.
 
+### Starting App
+
+When all tests are successful, you are ready to install the software in order to be executed as standalone program.
+For this call the command below and it will prepare a JAR file and let you know its location.
+
+`mvn install`
+  
+That's it, you can now start the application with the following command (replace <JAR_FILE> with the effective file name):
+
+`java -jar <JAR_FILE>`
+ 
 
 ## Deployment
 
-This section will be completed when the production server is available.
+This section will be completed when the first production server is available.
 
