@@ -46,13 +46,15 @@ public class TicketDAO {
 
     public Ticket getTicket(String vehicleRegNumber) {
         Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         Ticket ticket = null;
         try {
             con = dataBaseConfig.getConnection();
-            PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET);
+            ps = con.prepareStatement(DBConstants.GET_TICKET);
             //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME, AVAILABLE, RECURRING)
             ps.setString(1,vehicleRegNumber);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if(rs.next()){
                 ticket = new Ticket();
                 ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)),rs.getBoolean(7));
@@ -64,11 +66,11 @@ public class TicketDAO {
                 ticket.setOutTime(rs.getTimestamp(5));
                 ticket.setRecurring(rs.getBoolean(8));
             }
-            dataBaseConfig.closeResultSet(rs);
-            dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){
             logger.error("Error fetching next available slot",ex);
         }finally {
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
             dataBaseConfig.closeConnection(con);
             return ticket;
         }
@@ -97,21 +99,23 @@ public class TicketDAO {
 	public int countTickets(String vehicleRegNumber) 
 	{
         Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         int numberOfTickets = 0;
         try {
             con = dataBaseConfig.getConnection();
-            PreparedStatement ps = con.prepareStatement(DBConstants.COUNT_TICKETS);
+            ps = con.prepareStatement(DBConstants.COUNT_TICKETS);
             ps.setString(1,vehicleRegNumber);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if(rs.next()){
             	numberOfTickets = rs.getInt(1);
             }
-            dataBaseConfig.closeResultSet(rs);
-            dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){
             logger.error("Error fetching next available slot",ex);
             numberOfTickets = -1;
         }finally {
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
             dataBaseConfig.closeConnection(con);
         }    	
         return numberOfTickets;
