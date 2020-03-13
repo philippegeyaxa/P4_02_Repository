@@ -139,30 +139,25 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            
+            </plugin>            
             <plugin>
 		      <groupId>org.apache.maven.plugins</groupId>
 		      <artifactId>maven-site-plugin</artifactId>
  		      <version>3.7.1</version>
-		    </plugin>
-            
+		    </plugin>            
         </plugins>
     </build>
-
 	<reporting>
 		<plugins>
             <plugin>
-	            <groupId>org.codehaus.mojo</groupId>
-	            <artifactId>findbugs-maven-plugin</artifactId>
-	            <version>3.0.5</version>
+	            <groupId>com.github.spotbugs</groupId>
+	            <artifactId>spotbugs-maven-plugin</artifactId>
+	            <version>3.1.8</version>
 		        <configuration>
 			        <threshold>Normal</threshold>		<!-- High|Normal|Low|Exp|Ignore -->
 					<effort>Max</effort>				<!-- Min|Default|Max -->			          
-		        </configuration>
-	            
+		        </configuration>	           
           	</plugin>	    
      	</plugins>            
 	</reporting>
-
 </project>
